@@ -6,7 +6,6 @@ const router = express.Router()
 router.get("/movies", async (req, res) => {
     Movie.find()
   .then(items => {
-    console.log(items); // Check if any items are returned
     res.status(200).json(items);
   })
   .catch(err => {
