@@ -92,11 +92,10 @@ router.post('/search', async (req, res) => {
     // Get the search query from the request body
     console.log(req.body)
     const searchQuery = req.body.key || '';
-    // const searchQuery = 'married'
 
     try {
         // Fetch all movie descriptions
-        const movies = await Movie.find({}, 'description title -_id').lean();
+        const movies = await Movie.find({}, 'description title type show_id date_added release_year rating -_id').lean();
 
         // Add each movie description to the TF-IDF instance
         movies.forEach(movie => {
@@ -106,10 +105,17 @@ router.post('/search', async (req, res) => {
         // Find the similarity of each document to the search query
         const similarities = [];
         tfidf.tfidfs(searchQuery, (i, measure) => {
-            similarities.push({
-                movie: movies[i].title,
-                similarity: measure
-            });
+            if (movies[i]) {  // Check if the movie exists at index i
+                similarities.push({
+                    title: movies[i].title,
+                    type: movies[i].type,
+                    show_id: movies[i].show_id,
+                    date_added: movies[i].date_added,
+                    release_year: movies[i].release_year,
+                    rating: movies[i].rating,
+                    similarity: measure
+                });
+            }
         });
 
         // Sort the results by similarity in descending order
