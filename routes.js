@@ -8,7 +8,7 @@ router.use(express.json())
 
 // Get all posts
 router.get("/all", async (req, res) => {
-    Movie.find()
+    Movie.find({}, '-_id')
   .then(items => {
     res.status(200).json(items);
   })
@@ -21,7 +21,7 @@ router.get("/all", async (req, res) => {
 router.get("/tvshows", async (req, res) => {
     const filterCriteria = { type: 'TV Show' }; // Example filter criteria
 
-    Movie.find(filterCriteria)
+    Movie.find(filterCriteria,'-_id')
         .then(items => {
             res.status(200).json(items);
         })
@@ -34,7 +34,7 @@ router.get("/tvshows", async (req, res) => {
 router.get("/movies", async (req, res) => {
     const filterCriteria = { type: 'Movie' }; // Example filter criteria
 
-    Movie.find(filterCriteria)
+    Movie.find(filterCriteria,'-_id')
         .then(items => {
             res.status(200).json(items);
         })
@@ -45,23 +45,24 @@ router.get("/movies", async (req, res) => {
 });
 
 router.get("/releaseyear", async (req, res) => {
-    // Extract startYear and endYear from query parameters
+
     const { startYear, endYear } = req.query;
     console.log(startYear,endYear)
 
     const filterCriteria = {
         release_year: {
-            $gte: "${startYear}", // greater than or equal to startYear
-            $lte: "${endYear}" // less than or equal to endYear
+            $gte: startYear, 
+            $lte: endYear
         }
     };
 
-    Movie.find(filterCriteria)
+
+    Movie.find(filterCriteria,'-_id')
         .then(items => {
             res.status(200).json(items);
         })
         .catch(err => {
-            console.error(err); // Detailed error
+            console.error(err);
             res.status(500).json({ message: 'Error fetching data', error: err });
         });
 });
@@ -89,8 +90,7 @@ function removeStopWords(text) {
 
 
 router.post('/search', async (req, res) => {
-    // Get the search query from the request body
-    console.log(req.body)
+    
     const searchQuery = req.body.key || '';
 
     try {
