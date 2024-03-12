@@ -1,6 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const routes = require('./routes')
+const cors = require('cors');
+const app = express();
+
+app.use(cors());
 
 mongoose
 	.connect("mongodb+srv://Root:Root@cluster-movies.cdga3ux.mongodb.net/?retryWrites=true&w=majority&appName=Cluster-Movies", { useNewUrlParser: true })
